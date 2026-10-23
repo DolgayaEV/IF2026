@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#005b9f">
+<title>Маршрут в профессию: цена ошибки | Сургутнефтегаз</title>
+<style>
+  :root{
+    /* Фирменные цвета Сургутнефтегаз */
+    --brand-blue: #005b9f;
+    --brand-light-blue: #009fe3;
+    --brand-gold: #c4a865;
+    --brand-gold-light: #e6d3a8;
+    
+    /* Базовые цвета */
+    --bg: #f4f7f9;
+    --card: #ffffff;
+    --text: #1a2b4c;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    
+    /* Сигнальные цвета */
+    --danger: #e11d48;
+    --danger-bg: #fff1f2;
+    --success: #10b981;
+    --success-bg: #ecfdf5;
+    
+    --radius: 16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background-color: var(--bg);
+    color: var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+  }
+  
+  .app{
+    max-width:720px;
+    margin:0 auto;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    padding:12px 16px 10px;
+    border-bottom:2px solid var(--brand-blue);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .progress{
+    height:6px;background:var(--line);border-radius:99px;overflow:hidden;
+  }
+  .progress__fill{
+    height:100%;width:10%;
+    background:linear-gradient(90deg,var(--brand-blue),var(--brand-light-blue));
+    border-radius:99px;
+    transition:width .35s ease;
+  }
+  .topbar__meta{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:.02em;
+  }
+  .topbar__brand{font-weight:700;color:var(--brand-blue);}
+  
+  /* ---------- Screens ---------- */
+  main{flex:1;padding:20px 16px 32px;}
+  .screen{display:none;}
+  .screen.is-active{display:block;animation:fade .35s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  
+  .eyebrow{
+    display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--brand-blue);font-weight:800;margin-bottom:10px;
+    background: rgba(0, 91, 159, 0.1); padding: 4px 10px; border-radius: 6px;
+  }
+  h1{font-size:26px;line-height:1.25;margin:0 0 16px;color:var(--brand-blue);letter-spacing:-.01em;}
+  h2{font-size:21px;line-height:1.3;margin:0 0 16px;color:var(--brand-blue);letter-spacing:-.01em;}
+  p{margin:0 0 12px;color:#334155;}
+  
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  }
+  .card p:last-child{margin-bottom:0;}
+
+  /* Стили для картинок */
+  .case-img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border: 2px solid var(--line);
+  }
+  
+  .quote{
+    border-left:4px solid var(--brand-gold);
+    background:#fffdf8;
+    border-radius:0 12px 12px 0;
+    padding:14px 16px;
+    margin:0 0 16px;
+    color:#475569;
+    font-size:15px;
+    box-shadow: 0 2px 4px rgba(196, 168, 101, 0.1);
+  }
+  .quote p:last-child{margin-bottom:0;}
+  
+  .question{
+    font-weight:800;font-size:17px;margin:20px 0 14px;color:var(--brand-blue);
+  }
+
+  /* ---------- Options ---------- */
+  .options{display:flex;flex-direction:column;gap:12px;}
+  .option{
+    display:flex;gap:14px;align-items:flex-start;
+    width:100%;text-align:left;
+    background:var(--card);
+    border:2px solid var(--line);
+    color:var(--text);
+    border-radius:14px;
+    padding:16px;
+    font-size:15px;line-height:1.45;
+    font-family:inherit;
+    cursor:pointer;
+    transition:all .2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .option:hover{border-color:var(--brand-light-blue);}
+  .option:active{transform:scale(.98); box-shadow: 0 0 15px rgba(0, 159, 227, 0.4);}
+  
+  .option__badge{
+    flex:0 0 28px;height:28px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    background:#f1f5f9;color:var(--brand-blue);font-weight:800;font-size:14px;
+    transition:all .2s;
+  }
+  
+  .option.is-locked{cursor:default;opacity:.6;}
+  .option.is-locked.is-chosen,.option.is-locked.is-correct{opacity:1;}
+  
+  .option.is-wrong{
+    border-color:var(--danger);background:var(--danger-bg);opacity:1;
+  }
+  .option.is-wrong .option__badge{background:var(--danger);color:#fff;}
+  
+  .option.is-correct{
+    border-color:var(--success);background:var(--success-bg);opacity:1;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  }
+  .option.is-correct .option__badge{background:var(--success);color:#fff;}
+
+  /* ---------- Feedback ---------- */
+  .feedback{
+    margin-top:16px;padding:18px;border-radius:14px;
+    font-size:15px;
+    animation:fade .3s ease both;
+  }
+  .feedback p{margin:0 0 10px;color:inherit;}
+  .feedback p:last-child{margin-bottom:0;}
+  .feedback--bad{
+    background:var(--danger-bg);
+    border:2px solid var(--danger);
+    color:#881337;
+  }
+  .feedback--good{
+    background:var(--success-bg);
+    border:2px solid var(--success);
+    color:#064e3b;
+  }
+  .feedback__title{
+    font-weight:800;font-size:14px;letter-spacing:.05em;text-transform:uppercase;
+    margin-bottom:12px;display:block;display:flex;align-items:center;gap:8px;
+  }
+  .feedback--bad .feedback__title{color:var(--danger);}
+  .feedback--good .feedback__title{color:var(--success);}
+  
+  .money{
+    display:inline-block;font-weight:800;color:var(--danger);
+    background:rgba(225, 29, 72, 0.1);border-radius:6px;padding:2px 8px;
+  }
+  ul.clean{margin:0 0 10px;padding-left:20px;}
+  ul.clean li{margin-bottom:8px;color:inherit;}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:block;width:100%;
+    min-height:56px;
+    padding:16px 20px;
+    border:none;border-radius:14px;
+    font-family:inherit;font-size:16px;font-weight:800;
+    background:linear-gradient(135deg,var(--brand-blue),var(--brand-light-blue));
+    color:#ffffff;
+    cursor:pointer;
+    margin-top:20px;
+    transition:all .15s;
+    box-shadow:0 6px 20px -6px rgba(0, 91, 159, 0.6);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  
+  .btn:active {
+    transform:scale(.97);
+    box-shadow: 0 0 20px rgba(0, 159, 227, 0.8), inset 0 0 10px rgba(255,255,255,0.4);
+    background:linear-gradient(135deg,var(--brand-light-blue),var(--brand-blue));
+  }
+  
+  .btn--ghost{
+    background:transparent;color:var(--brand-blue);
+    border:2px solid var(--brand-blue);box-shadow:none;
+  }
+  .btn--ghost:active{
+    background:var(--brand-blue);color:#fff;
+    box-shadow: 0 0 20px rgba(0, 91, 159, 0.6);
+  }
+  .btn[hidden]{display:none;}
+
+  /* ---------- Summary cards ---------- */
+  .casecard{
+    background:var(--card);
+    border:1px solid var(--line);border-left:5px solid var(--brand-gold);
+    border-radius:12px;
+    padding:16px;margin-bottom:12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .casecard__title{font-weight:800;font-size:16px;margin-bottom:8px;color:var(--brand-blue);}
+  .casecard__row{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;color:var(--muted);margin-bottom:10px;}
+  .casecard__row b{color:#334155;font-weight:600;text-align:right;}
+  .casecard__price{
+    font-size:18px;font-weight:800;color:var(--danger);
+    border-top:1px dashed var(--line);padding-top:10px;
+  }
+  
+  .fine{
+    display:flex;justify-content:space-between;gap:12px;
+    padding:12px 0;border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .fine:last-child{border-bottom:none;}
+  .fine__name{flex:1;color:#334155;}
+  .fine__val{color:var(--danger);font-weight:800;white-space:nowrap;}
+
+  /* ---------- Highlight ---------- */
+  .highlight{
+    background:linear-gradient(135deg, var(--brand-blue), #003d6b);
+    border-radius:var(--radius);
+    padding:24px;text-align:center;margin:20px 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 91, 159, 0.4);
+  }
+  .highlight__big{
+    font-size:24px;font-weight:800;color:#fff;letter-spacing:-.02em;
+    line-height:1.3;
+  }
+  .highlight__small{font-size:14px;color:var(--brand-gold-light);margin-top:10px;}
+
+  /* ---------- Path formula ---------- */
+  .path{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .path__item{
+    background:#f0f9ff;border:1px solid #bae6fd;
+    border-radius:10px;padding:10px 14px;font-size:13.5px;
+    color:var(--brand-blue);flex:1 1 auto; font-weight: 600;
+  }
+  .path__item b{color:var(--brand-light-blue);}
+  
+  .pillar{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:16px;margin-bottom:12px;
+    border-left:4px solid var(--brand-light-blue);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .pillar__num{font-size:12px;font-weight:800;color:var(--brand-gold);letter-spacing:.1em;}
+  .pillar__title{font-weight:800;margin:6px 0 8px;color:var(--brand-blue);font-size:16px;}
+  .pillar p{font-size:14.5px;color:#475569;margin:0;}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:16px;box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+  .tab{
+    flex:1;padding:12px 8px;border:none;border-radius:10px;
+    background:transparent;color:var(--muted);
+    font-family:inherit;font-size:13px;font-weight:700;
+    cursor:pointer;transition:all .2s;line-height:1.2;
+  }
+  .tab.is-active{
+    background:var(--brand-blue);color:#fff;
+    box-shadow: 0 4px 10px rgba(0,91,159,0.3);
+  }
+  .tab:active { transform: scale(0.96); }
+  .tabpanel{display:none;}
+  .tabpanel.is-active{display:block;animation:fade .3s ease both;}
+
+  /* ---------- Final ---------- */
+  .final-quote{
+    background:#fffdf8;
+    border:2px solid var(--brand-gold);
+    border-radius:var(--radius);
+    padding:24px;margin-bottom:20px;
+    box-shadow: 0 4px 15px rgba(196, 168, 101, 0.15);
+  }
+  .final-quote p{color:#334155;font-size:16px;}
+  .final-quote strong{color:var(--brand-blue);font-weight:800;}
+  .footer-note{font-size:12px;color:var(--muted);text-align:center;margin-top:24px;}
+
+  /* ---------- Survey Styles ---------- */
+  .survey-group {
+    margin-bottom: 24px;
+    background: var(--card);
+    padding: 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+  .survey-label {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 14px;
+    display: block;
+    color: var(--brand-blue);
+  }
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .radio-label:hover {
+    border-color: var(--brand-light-blue);
+    background: #f0f9ff;
+  }
+  .radio-label input[type="radio"],
+  .radio-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--brand-blue);
+    cursor: pointer;
+  }
+  .textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s;
+  }
+  .textarea:focus {
+    outline: none;
+    border-color: var(--brand-blue);
+  }
+  .thank-you {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--success-bg);
+    border: 2px solid var(--success);
+    border-radius: var(--radius);
+    color: #064e3b;
+    display: none;
+  }
+  .thank-you h2 { color: var(--success); margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="progress"><div class="progress__fill" id="progressFill"></div></div>
+    <div class="topbar__meta">
+      <span class="topbar__brand">ПАО «Сургутнефтегаз»</span>
+      <span id="stepLabel">Экран 1 из 10</span>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================= ЭКРАН 1. ВСТУПЛЕНИЕ ================= -->
+    <section class="screen is-active">
+      <span class="eyebrow">🚀 Интерактивная игра</span>
+      <h1>Одна ошибка — или система?</h1>
+
+      <div class="card">
+        <p>🏭 На предприятие нужен новый рабочий. Кандидат хочет устроиться, но у него нет нужной профессии, опыта и подготовки для конкретной работы.</p>
+        <p>⏱️ Сейчас большая часть кандидатов приходит без необходимых знаний и практических навыков. Основная подготовка начинается уже после трудоустройства, занимает время специалистов и наставников и может затягивать выход работника на самостоятельную работу.</p>
+        <p>📄 При этом одного удостоверения недостаточно: готовность нужно подтвердить обучением, практикой и предусмотренными проверками.</p>
+      </div>
+
+      <div class="quote">
+        <p>Давайте посмотрим, к чему приводит допуск к работе неподготовленного сотрудника. Перед вами — четыре реальных сценария. Выберите вариант действий — и увидите цену ошибки. 👇</p>
+      </div>
+
+      <button class="btn" data-next type="button">Начать квест 🎮</button>
+    </section>
+
+    <!-- ================= ЭКРАН 2. КЕЙС 1 ================= -->
+    <section class="screen">
+      <span class="eyebrow">🛢️ Кейс 1 из 4</span>
+      <h2>«Посторонний предмет в скважине»</h2>
+
+      <img src="case1.jpg" alt="Незакреплённый инструмент" class="case-img">
+
+      <div class="card">
+        <p>На нефтяном производстве новый работник допущен к операциям без профильной подготовки. Он не знает регламента, просто поставил свою подпись в журнале допуска и считает, что «ничего не будет».</p>
+        <p>Во время работы в скважину падает посторонний предмет — часть инструмента, которую он не закрепил, потому что не был обучен порядку работ. Последствия — остановка добычи, ремонт скважины, простой. 📉</p>
+      </div>
+
+      <p class="question">❓ Как поступить с работником?</p>
+
+      <div class="options" data-quiz="c1">
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">A</span>
+          <span>Допустить к работе после короткого инструктажа — «опыт придёт на месте».</span>
+        </button>
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">B</span>
+          <span>Проверить только удостоверение и допустить.</span>
+        </button>
+        <button class="option" type="button" data-correct="true" data-feedback="good">
+          <span class="option__badge">C</span>
+          <span>Отправить на обучение в профессиональное надёжное учебное заведение (теория + практика), затем — стажировка с наставником.</span>
+        </button>
+      </div>
+
+      <div class="feedback feedback--bad" data-group="c1" data-key="bad" hidden>
+        <span class="feedback__title">⚠️ Авария</span>
+        <p>Посторонний предмет в скважине — это не «мелкая неприятность». Требуется подъём оборудования, промывка, возможно — бурение нового ствола или ликвидация. Остановка добычи на месяцы.</p>
+        <p>Ущерб — <span class="money">550 880 000 ₽</span>. Причина — допуск без квалификации. 📉</p>
+      </div>
+
+      <div class="feedback feedback--good" data-group="c1" data-key="good" hidden>
+        <span class="feedback__title">✅ Аварии нет</span>
+        <p>Работник приходит на участок подготовленным: знает регламент, порядок действий, умеет работать с инструментом. Риск аварии по причине «человеческого фактора» минимален. Наставник закрепляет практические навыки на реальном объекте.</p>
+        <p>Оперативно реагирует на внештатную ситуацию: инструмент падает — работник сразу останавливает работы, действует по регламенту, сообщает руководителю и наставнику, извлекает предмет безопасным способом. 🛡️</p>
+        <p><b>Добыча не остановлена. Ущерб — 0 ₽.</b> 🎉</p>
+      </div>
+
+      <button class="btn" data-next type="button" hidden>Дальше ➡️</button>
+    </section>
+
+    <!-- ================= ЭКРАН 3. КЕЙС 2 ================= -->
+    <section class="screen">
+      <span class="eyebrow">🔧 Кейс 2 из 4</span>
+      <h2>«Порыв трубопровода из-за запорной арматуры»</h2>
+
+      <img src="case2.jpg" alt="Разлив нефти" class="case-img">
+
+      <div class="card">
+        <p>Оператор по добыче нефти и газа не прошёл профильную подготовку, однако был формально допущен к самостоятельной работе с запорной арматурой. Мастер выдал производственное задание, решив, что «работы простые» и оператор справится сам.</p>
+        <p>При перекрытии задвижки оператор не разобрался в технологической схеме и по ошибке закрыл другую задвижку, вызвав гидроудар. В результате — разгерметизация фланцевого соединения и порыв трубопровода. Нефть под давлением выходит наружу, попадает на рельеф и в близлежащий водный объект. 🌊</p>
+      </div>
+
+      <p class="question">❓ Как нужно было поступить до допуска оператора к управлению арматурой?</p>
+
+      <div class="options" data-quiz="c2">
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">A</span>
+          <span>Проверить только внешний вид задвижки и допустить к работе — «оператор сказал, что справится».</span>
+        </button>
+        <button class="option" type="button" data-correct="true" data-feedback="good">
+          <span class="option__badge">B</span>
+          <span>Обучение в профессиональном надёжном учебном заведении (теория + практика управления арматурой под контролем), проверка квалификации, допуск только после экзамена и стажировки у подготовленного наставника.</span>
+        </button>
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">C</span>
+          <span>Ограничиться устным инструктажом на рабочем месте.</span>
+        </button>
+      </div>
+
+      <div class="feedback feedback--bad" data-group="c2" data-key="bad" hidden>
+        <span class="feedback__title">⚠️ Порыв трубопровода</span>
+        <p>Разлив нефти, загрязнение земель и водного объекта. 🚫</p>
+        <p><b>Штрафы и ущерб:</b></p>
+        <ul class="clean">
+          <li>ст. 9.1 КоАП (промышленная безопасность): должностное лицо — 20 000–30 000 ₽ или дисквалификация; юрлицо — до 200 000 ₽ + приостановка деятельности до 90 суток.</li>
+          <li>ч. 2 ст. 8.6 КоАП (порча земель нефтепродуктами): юрлицо — 40 000–80 000 ₽.</li>
+          <li>ст. 8.13 КоАП (загрязнение водного объекта): юрлицо — до 300 000 ₽ и более.</li>
+          <li>Иск Росприроднадзора: реальные суммы — 7,1 млн ₽ (Самаранефтегаз), 26,5 млн ₽ (Волгоградская обл.), 93,8 млн ₽ (Сахалин).</li>
+        </ul>
+        <p>Прямые штрафы — <span class="money">от 100 000 ₽</span>, совокупный ущерб — <span class="money">миллионы рублей</span>.</p>
+      </div>
+
+      <div class="feedback feedback--good" data-group="c2" data-key="good" hidden>
+        <span class="feedback__title">✅ Порыва нет</span>
+        <p>Оператор допущен к работе только после обучения, экзамена и стажировки. Знает порядок открытия и закрытия арматуры, умеет рассчитывать усилие. Качество переключения подтверждено наставником. Риск гидроудара и разгерметизации по причине низкой квалификации снят. 👷‍♂️</p>
+        <p><b>Предприятие не платит миллионы за разлив и не останавливает перекачку.</b> 🛡️</p>
+      </div>
+
+      <button class="btn" data-next type="button" hidden>Дальше ➡️</button>
+    </section>
+
+    <!-- ================= ЭКРАН 4. КЕЙС 3 ================= -->
+    <section class="screen">
+      <span class="eyebrow">⚡ Кейс 3 из 4</span>
+      <h2>«Допуск без образования»</h2>
+
+      <img src="case3.jpg" alt="Травма на производстве" class="case-img">
+
+      <div class="card">
+        <p>Работник не имеет опыта работы. Его допускают к работе электромонтёром без проверки навыков. В ходе смены он выполняет работы в электроустановке, не имея соответствующей группы по электробезопасности.</p>
+        <p>Происходит короткое замыкание — электромонтёр получает смертельный удар электрическим током. ☠️</p>
+      </div>
+
+      <p class="question">❓ Как правильно?</p>
+
+      <div class="options" data-quiz="c3">
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">A</span>
+          <span>Допустить — «разберётся по ходу».</span>
+        </button>
+        <button class="option" type="button" data-correct="true" data-feedback="good">
+          <span class="option__badge">B</span>
+          <span>Проверить знания и навыки, при необходимости направить на обучение.</span>
+        </button>
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">C</span>
+          <span>Ограничиться формальной подписью в журнале.</span>
+        </button>
+      </div>
+
+      <div class="feedback feedback--bad" data-group="c3" data-key="bad" hidden>
+        <span class="feedback__title">⚠️ Гибель работника</span>
+        <ul class="clean">
+          <li>ч. 3 ст. 5.27.1 КоАП: должностное лицо — 15 000–25 000 ₽; юрлицо — <b>110 000–130 000 ₽</b>.</li>
+          <li>Материалы направляются в следственные органы. Должностное лицо может быть привлечено по ст. 143 УК РФ (смерть человека по неосторожности). 👮‍♂️</li>
+          <li>Компенсация семье погибшего, простой, репутационные потери.</li>
+        </ul>
+      </div>
+
+      <div class="feedback feedback--good" data-group="c3" data-key="good" hidden>
+        <span class="feedback__title">✅ Риск снят</span>
+        <p>Работник проходит проверку знаний и навыков. При выявлении пробелов направляется на обучение. К самостоятельной работе в электроустановках допускается только после присвоения группы по электробезопасности и стажировки.</p>
+        <p><b>Риск смертельной электротравмы снят. Жизнь в безопасности.</b> ❤️</p>
+      </div>
+
+      <button class="btn" data-next type="button" hidden>Дальше ➡️</button>
+    </section>
+
+    <!-- ================= ЭКРАН 5. КЕЙС 4 ================= -->
+    <section class="screen">
+      <span class="eyebrow">🔥 Кейс 4 из 4</span>
+      <h2>«Формальная стажировка»</h2>
+
+      <img src="case4.jpg" alt="Стажировка для галочки" class="case-img">
+
+      <div class="card">
+        <p>Наставник не подготовлен. «Тётя Таня» — опытный рабочий, но она не умеет правильно объяснить, как выпаривать воду из битума: сама делает, а показать и проверить понимание — не может.</p>
+        <p>Стажировка проведена «для галочки». Новый работник не освоил практические навыки. Он ставит битум на 200 градусов, начинается вскипание, брызги летят в сторону — горячий битум попадает ему в глаз. Итог — потеря глаза. 🩹</p>
+      </div>
+
+      <p class="question">❓ Как выстроить наставничество?</p>
+
+      <div class="options" data-quiz="c4">
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">A</span>
+          <span>Закрепить наставника без отрыва от производства — «пусть учит между делом».</span>
+        </button>
+        <button class="option" type="button" data-correct="true" data-feedback="good">
+          <span class="option__badge">B</span>
+          <span>Подготовить наставника, выделить время в графике, использовать чек-лист и оценку.</span>
+        </button>
+        <button class="option" type="button" data-correct="false" data-feedback="bad">
+          <span class="option__badge">C</span>
+          <span>Не закреплять наставника, дать ГОСТы — «сам научится».</span>
+        </button>
+      </div>
+
+      <div class="feedback feedback--bad" data-group="c4" data-key="bad" hidden>
+        <span class="feedback__title">⚠️ Тяжёлая травма — потеря глаза</span>
+        <ul class="clean">
+          <li>ч. 3 ст. 5.27.1 КоАП: должностное лицо — 15 000–25 000 ₽; юрлицо — <b>110 000–130 000 ₽</b>.</li>
+          <li>Возможно привлечение по ст. 143 УК РФ (тяжкий вред здоровью по неосторожности).</li>
+          <li>Компенсация морального вреда, расходы на лечение, простой, потеря работника.</li>
+        </ul>
+        <p>Один необученный наставник и формальная стажировка обходятся дороже, чем подготовка наставника и выделенное время в графике.</p>
+      </div>
+
+      <div class="feedback feedback--good" data-group="c4" data-key="good" hidden>
+        <span class="feedback__title">✅ Работник вышел подготовленным</span>
+        <p>Наставник прошёл «Школу наставника»: умеет показывать операцию, объяснять требования понятным языком, проверять понимание и давать обратную связь. В графике выделено время на обучение новичка. Чек-лист адаптации фиксирует прогресс. 📝</p>
+        <p><b>Самостоятельная работа — без травм.</b> 👍</p>
+      </div>
+
+      <button class="btn" data-next type="button" hidden>Дальше ➡️</button>
+    </section>
+
+    <!-- ================= ЭКРАН 6. СВОДКА ================= -->
+    <section class="screen">
+      <span class="eyebrow">📊 Итоги квестов</span>
+      <h2>Цена неквалифицированного допуска</h2>
+
+      <div class="casecard">
+        <div class="casecard__title">🛢️ Посторонний предмет в скважине</div>
+        <div class="casecard__row"><span>Причина</span><b>Допуск без квалификации</b></div>
+        <div class="casecard__price">550 880 000 ₽</div>
+      </div>
+
+      <div class="casecard">
+        <div class="casecard__title">🔧 Порыв трубопровода (запорная арматура)</div>
+        <div class="casecard__row"><span>Причина</span><b>Неверное управление арматурой, допуск без проверки</b></div>
+        <div class="casecard__price">от 100 000 ₽ штрафов + миллионы ₽ ущерба</div>
+      </div>
+
+      <div class="casecard">
+        <div class="casecard__title">⚡ Электротравма (гибель электромонтёра)</div>
+        <div class="casecard__row"><span>Причина</span><b>Допуск без обучения и проверки навыков</b></div>
+        <div class="casecard__price">110 000–130 000 ₽ + уголовное дело + гибель</div>
+      </div>
+
+      <div class="casecard">
+        <div class="casecard__title">🔥 Ожог битумом (потеря глаза)</div>
+        <div class="casecard__row"><span>Причина</span><b>Наставник не подготовлен, формальная стажировка</b></div>
+        <div class="casecard__price">110 000–130 000 ₽ + травма</div>
+      </div>
+
+      <h2 style="margin-top:24px;">Штрафы, которые платят сразу 💸</h2>
+      <div class="card">
+        <div class="fine">
+          <span class="fine__name">Допуск без обучения по ОТ (ч. 3 ст. 5.27.1 КоАП)</span>
+          <span class="fine__val">110–130 тыс. ₽</span>
+        </div>
+        <div class="fine">
+          <span class="fine__name">Нарушение требований промбезопасности (ст. 9.1 КоАП)</span>
+          <span class="fine__val">до 200 тыс. ₽</span>
+        </div>
+        <div class="fine">
+          <span class="fine__name">Порча земель нефтепродуктами (ч. 2 ст. 8.6 КоАП)</span>
+          <span class="fine__val">40–80 тыс. ₽</span>
+        </div>
+        <div class="fine">
+          <span class="fine__name">Загрязнение водного объекта (ст. 8.13 КоАП)</span>
+          <span class="fine__val">до 300 тыс. ₽</span>
+        </div>
+      </div>
+
+      <div class="highlight">
+        <div class="highlight__big">1 авария =<br>подготовка от 4 700 до 11 000 рабочих</div>
+        <div class="highlight__small">Подготовка рабочего «с нуля» в ЦПТО — 50 000–115 000 ₽.<br>Одна авария — 550 000 000 ₽.</div>
+      </div>
+
+      <div class="quote">
+        <p>Неквалифицированный работник всегда стоит дорого. Штрафы, ущерб, остановка производства — это прямые потери. Но самое дорогое — <b>человеческая жизнь и здоровье</b>. ❤️</p>
+        <p>Этого можно избежать, если выстроить путь кандидата системно.</p>
+      </div>
+
+      <button class="btn" data-next type="button">А что предлагаем мы? 💡</button>
+    </section>
+
+    <!-- ================= ЭКРАН 7. ПРОЕКТ ================= -->
+    <section class="screen">
+      <span class="eyebrow">💡 Решение</span>
+      <h1>Маршрут в профессию 🗺️</h1>
+      <p style="color:var(--muted);">Как довести кандидата без опыта до подготовленного работника — и не перекладывать обучение на производство.</p>
+
+      <div class="path">
+        <div class="path__item">Кандидат без опыта</div>
+        <div class="path__item"><b>ЦПТО</b> — теория + практика + проверки</div>
+        <div class="path__item"><b>Договор</b> — стипендия, место, отработка 1 год</div>
+        <div class="path__item"><b>Наставник</b> — методика, время в графике, чек-лист</div>
+        <div class="path__item">Самостоятельная работа</div>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar__num">ОПОРА 1</div>
+        <div class="pillar__title">🎓 Обучение до производства — ЦПТО</div>
+        <p>Кандидат приходит на участок с профессией, практикой и сданным экзаменом. Мастер адаптирует подготовленного, а не учит с нуля.</p>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar__num">ОПОРА 2</div>
+        <div class="pillar__title">📝 Понятное трудоустройство — договор</div>
+        <p>Компания платит за обучение и стипендию, но получает гарантию отработки и возврат стоимости при отказе. Вложения защищены.</p>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar__num">ОПОРА 3</div>
+        <div class="pillar__title">🤝 Качественное наставничество — подготовленный наставник</div>
+        <p>Стажировка наставников, методика передачи знаний, время в графике, чек-лист адаптации и оценка результата. Наставничество — часть работы, а не «общественная нагрузка».</p>
+      </div>
+
+      <h2 style="margin-top:24px;">Что меняется для производства 🏭</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>✅ мастер не учит с нуля — он адаптирует подготовленного;</li>
+          <li>✅ выход на самостоятельную работу быстрее;</li>
+          <li>✅ вложения компании защищены договором;</li>
+          <li>✅ 4 кейса из начала квеста — закрыты системно, а не «разбором после».</li>
+        </ul>
+      </div>
+
+      <button class="btn" data-next type="button">Что это даёт? 📈</button>
+    </section>
+
+    <!-- ================= ЭКРАН 8. ВЫГОДЫ ================= -->
+    <section class="screen">
+      <span class="eyebrow">📈 Эффект</span>
+      <h2>Что даёт проект</h2>
+
+      <div class="tabgroup">
+        <div class="tabs">
+          <button class="tab is-active" type="button" data-tab="p1">👷 Кандидату</button>
+          <button class="tab" type="button" data-tab="p2">🏢 Работодателю</button>
+          <button class="tab" type="button" data-tab="p3">👔 Руководителю</button>
+        </div>
+
+        <div class="tabpanel is-active" data-panel="p1">
+          <div class="card">
+            <ul class="clean">
+              <li>🧭 <b>Понятный путь к профессии:</b> ясно, чему предстоит научиться, какие этапы пройти и какие проверки подтвердить готовность.</li>
+              <li>🎓 <b>Возможность получить рабочую профессию,</b> даже если сейчас нет опыта, нужного удостоверения или финансовой возможности.</li>
+              <li>💰 <b>Финансовая поддержка во время обучения</b> — стипендия предусмотрена договором целевого обучения.</li>
+              <li>🛠️ <b>Практическая подготовка,</b> связанная с будущей работой, а не только теория.</li>
+              <li>🎯 <b>Понимание перспектив:</b> при успешном обучении кандидат трудоустраивается на заранее определённую вакансию.</li>
+              <li>🤝 <b>Поддержка после выхода на работу:</b> подготовленный наставник помогает освоиться.</li>
+              <li>📄 <b>Меньше неопределённости:</b> требования, сроки и условия оговариваются заранее.</li>
+              <li>🛡️ <b>Безопасность с первого дня:</b> кандидат приходит с профессией и сданным экзаменом.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tabpanel" data-panel="p2">
+          <div class="card">
+            <ul class="clean">
+              <li>📊 <b>Кадровый резерв под конкретную потребность:</b> подготовка под реальные вакансии.</li>
+              <li>⭐ <b>Предсказуемое качество подготовки:</b> знания и навыки оцениваются до допуска.</li>
+              <li>🔗 <b>Меньше разрыва между обучением и работой:</b> программа планируется под задачи профессии.</li>
+              <li>🚫 <b>Снижение риска формального подхода:</b> важны подтверждение навыков и стажировка.</li>
+              <li>📅 <b>Планирование кадров:</b> заранее понятны число кандидатов, сроки и вакансии.</li>
+              <li>🔄 <b>Обратная связь для улучшения программ:</b> замечания наставников выявляют пробелы.</li>
+              <li>🔒 <b>Экономическая защита вложений:</b> гарантия отработки 1 год и возврат стоимости при отказе.</li>
+              <li>📉 <b>Снижение аварийности и травматизма:</b> меньше рисков штрафов, остановок и уголовных дел.</li>
+              <li>💎 <b>Экономия, несопоставимая с ценой аварии:</b> 1 авария = подготовка от 4 700 до 11 000 рабочих.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tabpanel" data-panel="p3">
+          <div class="card">
+            <ul class="clean">
+              <li>👁️ <b>Больше информации до выхода новичка:</b> понятно, что кандидат уже изучил и что предстоит.</li>
+              <li>⏱️ <b>Планируемая нагрузка:</b> наставничество включается в график заранее.</li>
+              <li>📋 <b>Понятная роль наставника:</b> задачи, сроки сопровождения, чек-лист и обратная связь.</li>
+              <li>🗣️ <b>Меньше повторных объяснений:</b> этапы согласованы между ЦПТО и подразделением.</li>
+              <li>🚨 <b>Раннее выявление затруднений:</b> помощь до того, как ошибка приведёт к травме.</li>
+              <li>⚖️ <b>Упорядоченное решение о готовности:</b> по результатам проверок, а не по впечатлению.</li>
+              <li>🛡️ <b>Меньше личного риска:</b> снижение риска ответственности, дисквалификации и уголовного преследования.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" data-next type="button">Финал 🎯</button>
+    </section>
+
+    <!-- ================= ЭКРАН 9. ФИНАЛ ================= -->
+    <section class="screen">
+      <span class="eyebrow">🎯 Вывод</span>
+      <h1>Система дешевле аварии</h1>
+
+      <img src="final.jpg" alt="Маршрут в профессию" class="case-img">
+
+      <div class="final-quote">
+        <p>Четыре кейса в начале — это не абстрактные истории. Это цена допуска без квалификации: <strong>550 млн ₽</strong> за аварию на скважине, миллионы за разлив нефти из-за порыва трубопровода, уголовное дело и гибель электромонтёра, потеря глаза из-за формальной стажировки. ⚠️</p>
+        <p>«Маршрут в профессию» закрывает эти риски системно: обучение в ЦПТО до выхода на производство, договор с гарантией трудоустройства и возврата стоимости, подготовленный наставник с методикой и временем в графике. 🛡️</p>
+        <p><strong>Самое дорогое — человеческая жизнь и здоровье. Их цена не измеряется штрафами. ❤️</strong></p>
+      </div>
+
+      <div class="card">
+        <p style="color:var(--muted);margin-bottom:10px;">«Маршрут в профессию» — система подготовки и сопровождения рабочего от кандидата до самостоятельной работы.</p>
+        <p style="margin:0;font-weight:700;color:var(--brand-blue);text-align:center;">Кандидат ➡️ ЦПТО ➡️ Договор ➡️ Наставник ➡️ Самостоятельная работа</p>
+      </div>
+
+      <button class="btn" data-next type="button">Оставить отзыв 📝</button>
+    </section>
+
+    <!-- ================= ЭКРАН 10. ОПРОС ================= -->
+    <section class="screen">
+      <span class="eyebrow">📝 Обратная связь</span>
+      <h1>Нам важно ваше мнение</h1>
+
+      <div id="surveyForm">
+        <div class="survey-group">
+          <label class="survey-label">1. Интересен ли вам проект «Маршрут в профессию»?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="q1" value="yes"> Да, очень актуально</label>
+            <label class="radio-label"><input type="radio" name="q1" value="maybe"> Скорее да, чем нет</label>
+            <label class="radio-label"><input type="radio" name="q1" value="no"> Нет, не интересно</label>
+          </div>
+        </div>
+
+        <div class="survey-group">
+          <label class="survey-label">2. Стали бы вы рекомендовать его коллегам?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="q2" value="yes"> Обязательно порекомендую</label>
+            <label class="radio-label"><input type="radio" name="q2" value="maybe"> Возможно, стоит обсудить</label>
+            <label class="radio-label"><input type="radio" name="q2" value="no"> Вряд ли</label>
+          </div>
+        </div>
+
+         <div class="survey-group">
+          <label class="survey-label">3. Воспользовались бы вы таким обучением по целевому назначению в ЦПТО на рабочую профессию?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="q3" value="yes"> Да, обязательно</label>
+            <label class="radio-label"><input type="radio" name="q3" value="maybe"> Скорее да, если условия подойдут</label>
+            <label class="radio-label"><input type="radio" name="q3" value="no"> Нет, у нас другие методы подготовки</label>
+          </div>
+        </div>
+
+        <div class="survey-group">
+          <label class="survey-label">Ваши вопросы или комментарии (необязательно):</label>
+          <textarea class="textarea" placeholder="Напишите здесь..."></textarea>
+        </div>
+
+        <button class="btn" type="button" onclick="submitSurvey()">Отправить ответы 🚀</button>
+      </div>
+
+      <div class="thank-you" id="thankYouMessage">
+        <h2>Спасибо! 🎉</h2>
+        <p>Ваши ответы очень важны для нас. Они помогут сделать проект ещё лучше.</p>
+      </div>
+
+      <button class="btn btn--ghost" type="button" onclick="location.reload()" style="margin-top: 20px;">🔄 Пройти игру заново</button>
+      <p class="footer-note">Интерактивная игра-презентация проекта «Маршрут в профессию» для ПАО «Сургутнефтегаз»</p>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+  var progressFill = document.getElementById('progressFill');
+  var stepLabel = document.getElementById('stepLabel');
+  var current = 0;
+
+  function render(){
+    screens.forEach(function(s, i){
+      s.classList.toggle('is-active', i === current);
+    });
+    var pct = ((current + 1) / screens.length) * 100;
+    progressFill.style.width = pct + '%';
+    stepLabel.textContent = 'Экран ' + (current + 1) + ' из ' + screens.length;
+    window.scrollTo(0, 0);
+  }
+
+  /* --- Навигация --- */
+  document.querySelectorAll('[data-next]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (current < screens.length - 1){
+        current++;
+        render();
+      }
+    });
+  });
+
+  /* --- Квизы --- */
+  document.querySelectorAll('[data-quiz]').forEach(function(quiz){
+    var options = Array.prototype.slice.call(quiz.querySelectorAll('.option'));
+    var screen = quiz.closest('.screen');
+    var nextBtn = screen.querySelector('[data-next]');
+
+    options.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        if (quiz.dataset.answered === 'true') return;
+        quiz.dataset.answered = 'true';
+
+        options.forEach(function(o){ o.classList.add('is-locked'); });
+
+        var isCorrect = opt.dataset.correct === 'true';
+        opt.classList.add('is-chosen');
+        opt.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+
+        // Подсветить правильный вариант
+        options.forEach(function(o){
+          if (o.dataset.correct === 'true') o.classList.add('is-correct');
+        });
+
+        // Скрыть все отзывы этой группы, показать нужный
+        screen.querySelectorAll('.feedback[data-group="' + quiz.dataset.quiz + '"]').forEach(function(f){
+          f.hidden = true;
+        });
+        var fb = screen.querySelector(
+          '.feedback[data-group="' + quiz.dataset.quiz + '"][data-key="' + opt.dataset.feedback + '"]'
+        );
+        if (fb){
+          fb.hidden = false;
+          setTimeout(function(){
+            fb.scrollIntoView({behavior:'smooth', block:'center'});
+          }, 100);
+        }
+
+        if (nextBtn) nextBtn.hidden = false;
+      });
+    });
+  });
+
+  /* --- Табы --- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    var group = tabs.closest('.tabgroup');
+    var buttons = Array.prototype.slice.call(tabs.querySelectorAll('.tab'));
+    var panels = Array.prototype.slice.call(group.querySelectorAll('.tabpanel'));
+
+    buttons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        buttons.forEach(function(b){ b.classList.toggle('is-active', b === btn); });
+        panels.forEach(function(p){
+          p.classList.toggle('is-active', p.dataset.panel === btn.dataset.tab);
+        });
+      });
+    });
+  });
+
+  render();
+})();
+
+// Функция для имитации отправки опроса
+function submitSurvey() {
+  document.getElementById('surveyForm').style.display = 'none';
+  document.getElementById('thankYouMessage').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
